@@ -1,0 +1,166 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搬砖云盘——为搬砖码农而生</title>
+    <link type="text/css" th:href="@{~/bootstrap/css/bootstrap.min.css}"  rel="stylesheet" />
+    <link type="text/css" th:href="@{~/webuploader/webuploader.css}" rel="stylesheet" />
+    <link type="text/css" th:href="@{~/css/font-awesome.min.css}" rel="stylesheet" />
+</head>
+<style>
+    .nav li {
+        padding: 0px 20px;
+    }
+    .tab{
+        padding: 0px;
+        margin: 0px auto;
+        text-align: center;
+        width: 100%;
+        height: 60%;
+    }
+    .files_platform{
+        /*border: 1px solid  #888888;*/
+        box-shadow: 0px 2px 10px 0px  #888888;
+        margin-top: 3%;
+        /*margin-left: 10px;*/
+        width: 100%;
+        height: 93.5%;
+        position: fixed;
+    }
+   /* 解决上传按钮与模态框冲突问题 */
+    #picker div:nth-child(2){
+        width: 120%!important;
+        height: 100%!important;
+    }
+</style>
+<body >
+
+<div>
+    <nav style="box-shadow: 0px 2px 10px 0px  #888888;height: 60px;" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>-+
+
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" style="padding: 10px;" href="#"><img th:src="@{~/images/logo1.png}" /></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav  nav-pills " style="padding: 10px;">
+                    <li ><a th:href="@{/user/selectfile}">网盘</a></li>
+                    <li ><a href="#myModal" data-toggle="modal">上传文件</a></li>
+                    <li class="active"><a th:href="@{/user/userinfo}">个人中心</a></li>
+                    <li ><a th:href="@{/user/selectbin}">回收站</a></li>
+                    <li class="navbar-right"><a href="#" onclick="exit()">注销</a></li>
+
+                    <!-- 获取cookie-->
+                    <li class="navbar-right"><a th:href="@{/user/userinfo}" class="navbar-link" th:each="cookie :${#httpServletRequest.getCookies()}"
+                                                  th:if="${cookie.getName().equals('uname')}" th:text="${cookie.getValue()}"></a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+
+<div class="files_platform">
+
+</br>
+    <form class="form-horizontal" style="width: 35%" th:action="@{/user/changeinfo}" th:object="${user}" method="post">
+        <div class="form-group">
+            <label for="uname" class="col-sm-2 control-label">用户名</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="uname" name="uname" th:filed="${user.uname}" th:value="${user.uname}" placeholder="用户名" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="upwd" class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" name="upwd" id="upwd" th:filed="*{upwd}" th:value="${user.upwd}" placeholder="请输入新密码">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="uemail" class="col-sm-2 control-label">电子邮箱</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" name="uemail" id="uemail" th:filed="*{uemail}" th:value="${user.uemail}" placeholder="请输入新邮箱">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="utel" class="col-sm-2 control-label">手机号</label>
+            <div class="col-sm-10">
+                <input type="tel" class="form-control" id="utel" name="utel" th:filed="*{utel}" th:value="${user.utel}" placeholder="请输入新手机号">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">更改</button>
+            </div>
+        </div>
+    </form>
+
+    </div>
+
+
+<div class="modal text-center fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h3 class="modal-title" id="myModalLabel">
+                    上传文件
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div id="uploader" class="wu-example">
+                        <!--用来存放文件信息-->
+                        <div class="tab" style="border:2px solid  #5E5E5E;">
+
+                            <div class="table-responsive" >
+                                <table class="table table-bordered " style="table-layout: fixed;word-break: break-all" id="thelist">
+                                    <thead>
+                                    <th>文件名</th>
+                                    <th>文件大小</th>
+                                    <th>上传状态</th>
+                                    <th>操作</th>
+                                    <th>上传进度</th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="btns" style="position: absolute;left: 30%; bottom: -8%;">
+                            <div style="padding: 20px;display: inline;"><div style="position: absolute;left: -20%" id="picker">选择文件</div></div>
+                            <div style="padding: 20px;display: inline; "><button id="ctlBtn" class="btn btn-default">开始上传</button></div>
+                            <div style="padding: 20px; display: inline;"><button id="stpBtn" class="btn btn-default" onclick="stop()">暂停上传</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{~/bootstrap/js/jquery-3.4.1.min.js}"></script>
+<script th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{~/webuploader/webuploader.min.js}"></script>
+<script th:src="@{~/js/md5.js}"></script>
+<script th:src="@{~/js/comm.js}"></script>
+
+</body>
+</html>

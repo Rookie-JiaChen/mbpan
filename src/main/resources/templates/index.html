@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搬砖云盘——为搬砖码农而生</title>
+    <link rel="stylesheet" th:href="@{~/bootstrap/css/style.css}">
+	<link rel="stylesheet" th:href="@{~/bootstrap/css/bootstrap.min.css}">
+</head>
+<script type="text/javascript">
+    function checkPassword() {
+        var pwd=document.getElementById("pwd");
+        var repwd=document.getElementById("repwd");
+        if (pwd.value != repwd.value) {
+            repwd.setCustomValidity("两次输入的密码不匹配");
+        }else{
+                repwd.setCustomValidity("");
+            }
+    }
+</script>
+<body>
+<section>
+	<div class="logo"><img style="width: 100px;height: 100px;" th:src="@{~/images/logo.png}" id="logo"></img></div>
+    <div class="container">
+        <div class="user singinBx">
+            <div class="imgBx"><img th:src="@{~/images/cloud.jpg}" alt=""></div>
+            <div class="formBx">
+                <form action="/user/login" method="post">
+                    <h2>登 录</h2>
+                    <input type="text" name="uname" placeholder="请输入用户名" required>
+                    <input type="password" name="upwd" placeholder="请输入密码" required>
+                    <input type="submit" name="" value="登 录">
+                    <p class="signup" style="right: -50%;display: inline;"><a th:href="@{/user/forgotpwd}">忘记密码</a></p>
+                    <p class="signup">还没有账号?<a href="#" onclick="toggleForm();">点击注册.</a></p>
+                </form>
+            </div>
+        </div>
+        <div class="user singupBx">
+            <div class="formBx">
+                <form action="/user/register" method="post">
+                    <h2>注册账号</h2>
+					<input type="text" name="uname" placeholder="请输入用户名(必填)" required>
+                    <input type="password" id="pwd" name="upwd" placeholder="请输入密码(必填)"  required onchange="checkPassword()" >
+					<input type="password" id="repwd" placeholder="确认密码(必填)" required oninvalid=""  onchange="checkPassword()">
+					<input type="email" name="uemail" placeholder="请输入邮箱可用于找回密码(必填)" required>
+                    <input type="tel" name="utel" placeholder="请输入电话号码(非必填)" maxlength="11">
+                    
+
+                    <input type="submit" name="" value="注 册">
+                    <p class="signup">已经有账号了?<a href="#" onclick="toggleForm();">点击登陆.</a></p>
+                </form>
+            </div>
+            <div class="imgBx"><img th:src="@{~/images/cloud1.jpg}" alt=""></div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" th:src="@{~/bootstrap/js/jquery-3.4.1.min.js}"></script>
+<script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+
+<script type="text/javascript">
+    function toggleForm() {
+        var container = document.querySelector('.container');
+        container.classList.toggle('active')
+    }
+</script>
+
+</body>
+</html>

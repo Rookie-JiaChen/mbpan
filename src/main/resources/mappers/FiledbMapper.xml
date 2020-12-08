@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mbrickspan.mbpan.dao.FiledbMapper">
+  <resultMap id="BaseResultMap" type="com.mbrickspan.mbpan.entity.Filedb">
+    <constructor>
+      <idArg column="fid" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="filename" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="ifdel" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="uname" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="fmd5" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    fid, filename, ifdel, uname, fmd5
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from filedb
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <select id="selectfilebyuname" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from filedb
+    where uname = #{uname,jdbcType=VARCHAR} and ifdel = 0
+  </select>
+  <select id="selectbinbyuname" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from filedb
+    where uname = #{uname,jdbcType=VARCHAR} and ifdel = 1
+  </select>
+  <select id="selectfilebyfmd5" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from filedb
+    where fmd5 = #{fmd5,jdbcType=VARCHAR} and uname = #{uname,jdbcType=VARCHAR}
+  </select>
+  <select id="selectfilefuzzily" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from filedb
+    <where>
+      <if test="_parameter != null and _parameter != '' ">
+        filename LIKE "%"#{filename,jdbcType=VARCHAR}"%"
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from filedb
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="shiftdel" parameterType="java.lang.String">
+    delete from filedb
+    where filename = #{filename,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.mbrickspan.mbpan.entity.Filedb">
+    insert into filedb (fid, filename, ifdel,
+      uname, fmd5)
+    values (#{fid,jdbcType=INTEGER}, #{filename,jdbcType=VARCHAR}, #{ifdel,jdbcType=INTEGER},
+      #{uname,jdbcType=VARCHAR}, #{fmd5,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mbrickspan.mbpan.entity.Filedb">
+    insert into filedb
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="fid != null">
+        fid,
+      </if>
+      <if test="filename != null">
+        filename,
+      </if>
+      <if test="ifdel != null">
+        ifdel,
+      </if>
+      <if test="uname != null">
+        uname,
+      </if>
+      <if test="fmd5 != null">
+        fmd5,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="fid != null">
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="filename != null">
+        #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="ifdel != null">
+        #{ifdel,jdbcType=INTEGER},
+      </if>
+      <if test="uname != null">
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="fmd5 != null">
+        #{fmd5,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mbrickspan.mbpan.entity.Filedb">
+    update filedb
+    <set>
+      <if test="filename != null">
+        filename = #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="ifdel != null">
+        ifdel = #{ifdel,jdbcType=INTEGER},
+      </if>
+      <if test="uname != null">
+        uname = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="fmd5 != null">
+        fmd5 = #{fmd5,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mbrickspan.mbpan.entity.Filedb">
+    update filedb
+    set filename = #{filename,jdbcType=VARCHAR},
+      ifdel = #{ifdel,jdbcType=INTEGER},
+      uname = #{uname,jdbcType=VARCHAR},
+      fmd5 = #{fmd5,jdbcType=VARCHAR}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="del" parameterType="java.lang.Integer">
+    update filedb
+    set
+      ifdel = 1
+   where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="recover" parameterType="java.lang.Integer">
+    update filedb
+    set
+      ifdel = 0
+   where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

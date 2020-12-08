@@ -1,0 +1,168 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搬砖云盘——为搬砖码农而生</title>
+    <link type="text/css" th:href="@{~/bootstrap/css/bootstrap.min.css}"  rel="stylesheet" />
+    <link type="text/css" th:href="@{~/webuploader/webuploader.css}" rel="stylesheet" />
+    <link type="text/css" th:href="@{~/css/font-awesome.min.css}" rel="stylesheet" />
+</head>
+<style>
+    .nav li {
+        padding: 0px 20px;
+    }
+    .tab{
+        padding: 0px;
+        margin: 0px auto;
+        text-align: center;
+        width: 100%;
+        height: 60%;
+    }
+    .files_platform{
+        /*border: 1px solid  #888888;*/
+        box-shadow: 0px 2px 10px 0px  #888888;
+        margin-top: 3%;
+        /*margin-left: 10px;*/
+        width: 100%;
+        height: 93.5%;
+        position: fixed;
+    }
+   /* 解决上传按钮与模态框冲突问题 */
+    #picker div:nth-child(2){
+        width: 120%!important;
+        height: 100%!important;
+    }
+</style>
+<body >
+
+<div>
+    <nav style="box-shadow: 0px 2px 10px 0px  #888888;height: 60px;" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>-+
+
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" style="padding: 10px;" href="#"><img th:src="@{~/images/logo1.png}" /></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav  nav-pills " style="padding: 10px;">
+                    <li ><a th:href="@{/user/selectfile}">网盘</a></li>
+                    <li ><a href="#myModal" data-toggle="modal">上传文件</a></li>
+                    <li ><a th:href="@{/user/userinfo}">个人中心</a></li>
+                    <li class="active"><a th:href="@{/user/selectbin}">回收站</a></li>
+                    <li class="navbar-right"><a href="#" onclick="exit()">注销</a></li>
+
+                    <!-- 获取cookie-->
+                    <li class="navbar-right"><a th:href="@{/user/userinfo}" class="navbar-link" th:each="cookie :${#httpServletRequest.getCookies()}"
+                                                  th:if="${cookie.getName().equals('uname')}" th:text="${cookie.getValue()}"></a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+
+<div class="files_platform">
+    <div style="top: 2%;left: 5%;position: relative;">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="right: 3%;position: relative"><i class="fa fa-cloud-upload "></i>上传文件</button>
+        <a th:href="@{/user/selectbin}"><button class="btn btn-info" style="left: 5%;position: relative" ><i class="fa fa-refresh "></i>刷新</button></a>
+        <form action="userinfo/selectByFileName" method="post" id="searchfiles" style="right: 10%;position: absolute;top: 8%;" >
+            <div style="width: 20%;left: 82%;position: relative">
+            <div class="input-group">
+                <input class="form-control" type="text" name="searchfile" placeholder=" 搜索我的文件" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" >🔍</button>
+                </span>
+            </div>
+            </div>
+
+        </form>
+    </div>
+</br>
+    <span style="color: dimgray;position: relative;left: 1%">全部文件</span> <span style="color: dimgray;position: relative;left: 76%" th:text="'已加载'+ ${filedbList.size()}+ '个'">XXX</span>
+        <div class="table-responsive" >
+            <table class="table table-hover"  style="table-layout: fixed;word-break: break-all">
+                <thead>
+                <th width="80%">文件名</th>
+                <th width="20%" align="center">操作</th>
+                </thead>
+                <tbody>
+                <tr th:each="Filedb : ${filedbList}">
+                <td th:text="${Filedb.filename}">filename</td>
+                <td>
+                    <a th:href="@{/user/recover(fid=${Filedb.fid})}"><button class="btn btn-default"><i class="fa fa-history "></i>恢复</button></a>
+                    <a th:href="@{/shiftdel(filename=${Filedb.filename})}"><button class="btn btn-default"><i class="fa fa-trash "></i>彻底删除</button></a>
+                </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+</div>
+
+
+<div class="modal text-center fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h3 class="modal-title" id="myModalLabel">
+                    上传文件
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div id="uploader" class="wu-example">
+                        <!--用来存放文件信息-->
+                        <div class="tab" style="border:2px solid  #5E5E5E;">
+
+                            <div class="table-responsive" >
+                                <table class="table table-bordered " style="table-layout: fixed;word-break: break-all" id="thelist">
+                                    <thead>
+                                    <th>文件名</th>
+                                    <th>文件大小</th>
+                                    <th>上传状态</th>
+                                    <th>操作</th>
+                                    <th>上传进度</th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="btns" style="position: absolute;left: 30%; bottom: -8%;">
+                            <div style="padding: 20px;display: inline;"><div style="position: absolute;left: -20%" id="picker">选择文件</div></div>
+                            <div style="padding: 20px;display: inline; "><button id="ctlBtn" class="btn btn-default">开始上传</button></div>
+                            <div style="padding: 20px; display: inline;"><button id="stpBtn" class="btn btn-default" onclick="stop()">暂停上传</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{~/bootstrap/js/jquery-3.4.1.min.js}"></script>
+<script th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{~/webuploader/webuploader.min.js}"></script>
+<script th:src="@{~/js/md5.js}"></script>
+<script th:src="@{~/js/comm.js}"></script>
+
+</body>
+</html>
