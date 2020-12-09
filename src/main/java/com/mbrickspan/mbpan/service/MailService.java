@@ -24,7 +24,7 @@ public  class MailService {
         javaMailSender.setHost("smtp.163.com");
         javaMailSender.setPort(465);
         javaMailSender.setUsername("w791598204@163.com");
-        javaMailSender.setPassword("UPMUGVTBYZYGEAGY");
+        javaMailSender.setPassword("************");
         javaMailSender.setProtocol("smtps");
         javaMailSender.setDefaultEncoding("UTF-8");
         return javaMailSender;
