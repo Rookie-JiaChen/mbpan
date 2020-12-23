@@ -205,5 +205,44 @@ public class FileController {
 
         return "forward:/user/selectbin";
     }
+	
+	//修改文件名
+    @ResponseBody
+    @RequestMapping(value = "updateFileName")
+    public String updateFileName(String oldFileName,String newFileName,String fileId){
+        String path = "C:/mbpanupload/"+UsersController.cookie_uname+"/"+oldFileName;
+        String newPath = "C:/mbpanupload/"+UsersController.cookie_uname+"/"+newFileName;
+        File file=new File(path);
+        File newFile=new File(newPath);
+        if (file.isFile()) {
+            file.renameTo(newFile);
+            fileServiceImpl.updateFileName(fileId,newFileName);
+        }else{
+            System.out.println("文件不存在!");
+        }
+
+        return "修改文件名成功";
+    }
+
+    //获取文件属性
+    @ResponseBody
+    @RequestMapping(value = "getFileProperty")
+    public String getFileProperty(String filename) throws JsonProcessingException {
+        String path = "C:/mbpanupload/"+UsersController.cookie_uname+"/"+filename;
+        File file=new File(path);
+        String json = null;
+        HashMap<String, Object> map = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (file.isFile()) {
+            long length = file.length()/1024;
+            map.put("文件大小",length+"kb");
+            map.put("最后修改时间",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(file.lastModified()));
+            json = objectMapper.writeValueAsString(map);
+        }else{
+            System.out.println("文件不存在!");
+        }
+
+        return "文件属性:"+json;
+    }
 
 }
